@@ -1,12 +1,9 @@
 package com.omochimetaru.ironcake;
 
-import android.graphics.SurfaceTexture;
+import android.graphics.PixelFormat;
 import android.os.Bundle;
-import android.view.TextureView;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
-
-import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 
 /**
  * Created by omochi on 2014/01/24.
@@ -29,7 +26,7 @@ import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
     onDestroyでeglDisplayの解放
 
  */
-public abstract class Activity extends android.app.Activity implements TextureView.SurfaceTextureListener {
+public abstract class Activity extends android.app.Activity implements SurfaceHolder.Callback {
     static {
         System.loadLibrary("IronCake");
         nativeStaticInit();
@@ -39,7 +36,7 @@ public abstract class Activity extends android.app.Activity implements TextureVi
     private long application;
 
 
-    private TextureView textureView;
+    private SurfaceView surfaceView;
 
     //ネイティブ化してオーバライドするように
     protected abstract long controllerConstruct();
@@ -48,9 +45,11 @@ public abstract class Activity extends android.app.Activity implements TextureVi
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
 
-        textureView = new TextureView(this);
-        textureView.setSurfaceTextureListener(this);
-        setContentView(textureView);
+        surfaceView = new SurfaceView(this);
+        surfaceView.getHolder().setFormat(PixelFormat.RGBA_8888);
+        surfaceView.getHolder().addCallback(this);
+
+        setContentView(surfaceView);
 
         nativeOnCreate();
     }
@@ -59,8 +58,6 @@ public abstract class Activity extends android.app.Activity implements TextureVi
 
     @Override
     protected void onDestroy(){
-
-
         nativeOnDestroy();
 
         super.onDestroy();
@@ -86,31 +83,12 @@ public abstract class Activity extends android.app.Activity implements TextureVi
 
     private native void nativeOnPause();
 
+    @Override
+    public native void surfaceCreated(SurfaceHolder surfaceHolder);
 
     @Override
-    public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture, int width, int height) {
-        nativeOnSurfaceTextureAvailable(surfaceTexture, width, height);
-    }
-
-    private native void nativeOnSurfaceTextureAvailable(SurfaceTexture surfaceTexture, int width, int height);
+    public native void surfaceChanged(SurfaceHolder surfaceHolder, int format, int width, int height);
 
     @Override
-    public void onSurfaceTextureSizeChanged(SurfaceTexture surfaceTexture, int width, int height) {
-        nativeOnSurfaceTextureSizeChanged(surfaceTexture, width, height);
-    }
-
-    private native void nativeOnSurfaceTextureSizeChanged(SurfaceTexture surfaceTexture, int width, int height);
-
-    @Override
-    public boolean onSurfaceTextureDestroyed(SurfaceTexture surfaceTexture) {
-        nativeOnSurfaceTextureDestroyed(surfaceTexture);
-        return false;
-    }
-
-    private native void nativeOnSurfaceTextureDestroyed(SurfaceTexture surfaceTexture);
-
-    @Override
-    public void onSurfaceTextureUpdated(SurfaceTexture surfaceTexture) {
-
-    }
+    public native void surfaceDestroyed(SurfaceHolder surfaceHolder);
 }
