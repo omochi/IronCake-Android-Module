@@ -32,9 +32,12 @@ import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 public abstract class Activity extends android.app.Activity implements TextureView.SurfaceTextureListener {
     static {
         System.loadLibrary("IronCake");
+        nativeStaticInit();
     }
+    private static native void nativeStaticInit();
 
     private long application;
+
 
     private TextureView textureView;
 
@@ -56,6 +59,8 @@ public abstract class Activity extends android.app.Activity implements TextureVi
 
     @Override
     protected void onDestroy(){
+
+
         nativeOnDestroy();
 
         super.onDestroy();
