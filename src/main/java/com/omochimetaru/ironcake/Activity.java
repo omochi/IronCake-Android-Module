@@ -2,8 +2,14 @@ package com.omochimetaru.ironcake;
 
 import android.graphics.PixelFormat;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by omochi on 2014/01/24.
@@ -35,8 +41,9 @@ public abstract class Activity extends android.app.Activity implements SurfaceHo
 
     private long application;
 
-
+    private Handler mainThreadHandler;
     private SurfaceView surfaceView;
+    private Timer updateTimer;
 
     //ネイティブ化してオーバライドするように
     protected abstract long controllerConstruct();
@@ -45,11 +52,15 @@ public abstract class Activity extends android.app.Activity implements SurfaceHo
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
 
+        mainThreadHandler = new Handler(Looper.getMainLooper());
+
         surfaceView = new SurfaceView(this);
         surfaceView.getHolder().setFormat(PixelFormat.RGBA_8888);
         surfaceView.getHolder().addCallback(this);
 
         setContentView(surfaceView);
+
+        updateTimer = new Timer();
 
         nativeOnCreate();
     }
@@ -70,12 +81,16 @@ public abstract class Activity extends android.app.Activity implements SurfaceHo
         super.onResume();
 
         nativeOnResume();
+
+        onUpdateTimer();
     }
 
     private native void nativeOnResume();
 
     @Override
     protected void onPause(){
+        updateTimer.cancel();
+
         nativeOnPause();
 
         super.onPause();
@@ -91,4 +106,25 @@ public abstract class Activity extends android.app.Activity implements SurfaceHo
 
     @Override
     public native void surfaceDestroyed(SurfaceHolder surfaceHolder);
+
+    private native void update();
+
+    private void scheduleUpdateTimer(float delay){
+        updateTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                onUpdateTimer();
+            }
+        } , (int)(delay * 1000));
+    }
+    private void onUpdateTimer(){
+        Log.i("IronCake", "onUpdateTimer");
+         //メインスレで同期更新する
+        mainThreadHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                Activity.this.update();
+            }
+        });
+    }
 }
