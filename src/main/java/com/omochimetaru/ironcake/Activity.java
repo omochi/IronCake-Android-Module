@@ -8,6 +8,9 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -118,8 +121,7 @@ public abstract class Activity extends android.app.Activity implements SurfaceHo
         } , (int)(delay * 1000));
     }
     private void onUpdateTimer(){
-        Log.i("IronCake", "onUpdateTimer");
-         //メインスレで同期更新する
+        //メインスレで同期更新する
         mainThreadHandler.post(new Runnable() {
             @Override
             public void run() {
