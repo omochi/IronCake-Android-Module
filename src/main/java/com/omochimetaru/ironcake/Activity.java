@@ -85,7 +85,7 @@ public abstract class Activity extends android.app.Activity implements SurfaceHo
 
         nativeOnResume();
 
-        onUpdateTimer();
+        //onUpdateTimer();
     }
 
     private native void nativeOnResume();
