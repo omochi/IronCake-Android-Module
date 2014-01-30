@@ -17,8 +17,11 @@ public class NativeTask implements Runnable {
     }
     private static native void nativeStaticInit();
 
-    //native ick::function<void (*)()> *
     private long function;
+
+    //Runの後Releaseする
+    private boolean autoRelease;
+
     public NativeTask(){
     }
 
