@@ -43,6 +43,7 @@ public abstract class Activity extends android.app.Activity implements SurfaceHo
     //ネイティブ化してオーバライドするように
     protected abstract long controllerConstruct();
 
+    private native void didCreate();
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -55,43 +56,35 @@ public abstract class Activity extends android.app.Activity implements SurfaceHo
 
         setContentView(surfaceView);
 
-        nativeOnCreate();
+        didCreate();
     }
 
-    private native void nativeOnCreate();
-
+    private native void willDestroy();
     @Override
     protected void onDestroy(){
-        nativeOnDestroy();
+        willDestroy();
         super.onDestroy();
     }
 
-    private native void nativeOnDestroy();
-
+    private native void didResume();
     @Override
     protected void onResume(){
         super.onResume();
-        nativeOnResume();
+        didResume();
     }
 
-    private native void nativeOnResume();
-
+    private native void willPause();
     @Override
     protected void onPause(){
-        nativeOnPause();
+        willPause();
         super.onPause();
     }
-
-    private native void nativeOnPause();
 
     @Override
     public native void surfaceCreated(SurfaceHolder surfaceHolder);
     @Override
     public native void surfaceChanged(SurfaceHolder surfaceHolder, int format, int width, int height);
-
     @Override
     public native void surfaceDestroyed(SurfaceHolder surfaceHolder);
-
-    private native void update();
 
 }
