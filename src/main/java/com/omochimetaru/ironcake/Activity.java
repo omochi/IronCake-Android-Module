@@ -2,8 +2,6 @@ package com.omochimetaru.ironcake;
 
 import android.graphics.PixelFormat;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
@@ -31,13 +29,8 @@ import android.view.SurfaceView;
 public abstract class Activity extends android.app.Activity implements SurfaceHolder.Callback {
     static {
         System.loadLibrary("IronCake");
-        nativeStaticInit();
     }
-    private static native void nativeStaticInit();
-
     private long application;
-
-    private Handler mainThreadHandler;
     private SurfaceView surfaceView;
 
     //ネイティブ化してオーバライドするように
@@ -47,8 +40,6 @@ public abstract class Activity extends android.app.Activity implements SurfaceHo
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-
-        mainThreadHandler = new Handler(Looper.getMainLooper());
 
         surfaceView = new SurfaceView(this);
         surfaceView.getHolder().setFormat(PixelFormat.RGBA_8888);
