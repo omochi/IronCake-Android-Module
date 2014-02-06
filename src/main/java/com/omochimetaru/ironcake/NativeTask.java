@@ -6,9 +6,10 @@ import android.util.Log;
  * Created by omochi on 2014/01/29.
  */
 
-//  ネイティブのick::function<JNIEnv *, jobject> *をラップするクラス
-//  ネイティブ側で明示的なreleaseの呼び出しが必要
-//  Run前のreleaseが可能
+//  ネイティブ側から生成する、Java側から実行できるTaskクラス。
+//  Java側ではRunnableになっている。
+//  ネイティブ側の型はick::Function<void (*)(JNIEnv *,jobject)>。
+//  ぶら下げているそれをreleaseでJavaかネイティブどちらかから解放する必要がある。
 
 public class NativeTask implements Runnable {
     static {
@@ -18,9 +19,6 @@ public class NativeTask implements Runnable {
     private static native void nativeStaticInit();
 
     private long function;
-
-    //Runの後Releaseする
-    private boolean autoRelease;
 
     public NativeTask(){
     }
